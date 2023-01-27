@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 """ Breadth-first search example """
 
-from coursecodes.graafi3 import Graph
+from graafi3 import Graph
 
 
 

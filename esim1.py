@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-from coursecodes.graafi3 import Graph
+from graafi3 import Graph
 from CountShortest_dum import CountShortest
 
 def ReadSet(filename):
