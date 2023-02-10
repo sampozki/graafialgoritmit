@@ -4,52 +4,49 @@
 from graafi3 import Graph
 
 
-
 def ReadSet(filename):
     ff = open(filename,'r')
     x = ff.readlines()[0].split()
-    S =set([])
+    S = set([])
     for i in x:
         S.add(int(i))
     return S
 
 
-
-
-# CountShortest(G, B, 6,4)
+# Counts shortest graph's route from startVertex to finalVertex by using most vertexes from subset
 def CountShortest(graph, subset, startVertex, finalVertex):
-
-    # print("Graph members: " + str(graph.V))
-    # print("Graph: " + str(graph.AL))
-    # print("Set: " + str(subset))
-
+    # Following code is pretty much just BFS but with small changes
     routeMembers = []
+    visitedVertexes = set()
+    vertexList = [(startVertex, [startVertex])]
 
-    queue = [(startVertex, [startVertex])]
-    visited = set()
-
-    while queue:
-        vertex, path = queue.pop(0)
-        visited.add(vertex)
+    while vertexList:
+        vertex, path = vertexList.pop(0)
+        visitedVertexes.add(vertex)
 
         try: 
-            for node in graph.AL[vertex]:
+            for vertex in graph.AL[vertex]:
 
-                if node == finalVertex:
+                # If vertex is finalVertex, then add it to routeMembers
+                if vertex == finalVertex:
                     routeMembers.append(path + [finalVertex])
 
+                # Else mark vertex as visited if algoritm hasn't visit it yet. Also add currenty path ito vertexList
                 else:
-                    if node not in visited:
-                        visited.add(node)
-                        queue.append((node, path + [node]))
-        except Exception as e:
-            return e
+                    if vertex not in visitedVertexes:
+                        visitedVertexes.add(vertex)
+                        vertexList.append((vertex, path + [vertex]))
 
-    routeMembers = [i for i in routeMembers if len(i) == min([len(i) for i in routeMembers])]
+        except Exception as e:
+            return "Error happened: " + str(e)
     
+    # Pretty ugly way to do this but oneliner and list comprehension are cool :D
+    # Finds shortest routes based on their lenght and strips any longer paths out and overwrites the variable
+    routeMembers = [i for i in routeMembers if len(i) == min([len(i) for i in routeMembers])]
 
     subSetVisitCount = []
 
+    # Following files check how many subset vertexes are in shortest paths and sum their amounts together
     for i in routeMembers:
         n = 0
         for vertex in subset:
@@ -58,4 +55,13 @@ def CountShortest(graph, subset, startVertex, finalVertex):
 
         subSetVisitCount.append(n)
     
-    return max(subSetVisitCount)
+    # Check if there is a route from start to final vertexes
+    if routeMembers == []:
+        return "No path from startVertex to finalVertex"     
+    
+    # Check if there are any subset vertexes in the route
+    # If there is/are then return biggest amount of them
+    if subSetVisitCount != []:
+        return max(subSetVisitCount)
+    else:
+        return "No subset vertexes in the shortest path"
